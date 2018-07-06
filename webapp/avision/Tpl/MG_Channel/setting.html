@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width">
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="pragma" content="no-cache">
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+
+<load href="__PUBLIC__/jeasyui/themes/material-teal/easyui.css" />
+<load href="__PUBLIC__/jeasyui/themes/icon.css" />
+
+
+<load href="__PUBLIC__/jeasyui/jquery.min.js" />
+<load href="__PUBLIC__/jeasyui/jquery.easyui.min.js" />
+<link rel="stylesheet" type="text/css" href="__PUBLIC__/jeasyui/themes/mobile.css">
+<script type="text/javascript" src="__PUBLIC__/jeasyui/jquery.easyui.mobile.js"></script>
+
+<script type="text/javascript">
+	$(document).ready(function(){
+
+	});
+
+</script>
+
+<style type="text/css"> 
+</style>
+</head>
+<body>
+<div class="easyui-navpanel" >
+	<header>
+		<div class="m-toolbar">
+			<span id="p2-title" class="m-title">频道综合管理</span>
+		</div>
+	</header>
+	<div style="margin:50px auto;width:40em; text-align:center">
+		<form id="ff" method="post">
+			<div style="margin-bottom:20px">
+				<input class="easyui-textbox" name="chnId" value="{$chnId}" style="width:100%" data-options="label:'频道ID:' ">
+			</div>
+			<div style="margin-bottom:20px">
+				<input class="easyui-textbox" name="chnName" value="{$chnName}" style="width:100%" data-options="label:'频道名称:' ">
+			</div>
+			<div style="margin-bottom:20px">
+				<input class="easyui-textbox" name="owner" value="{$owner}" style="width:100%" data-options="label:'播主账号:'">
+			</div>
+			<input type="hidden" name="work" value="{$work}">
+		</form>
+		<div style="text-align:center;padding:5px 0">
+			<a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitForm()" style="width:80px">Submit</a>
+			<a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()" style="width:80px">Clear</a>
+		</div>
+	</div>
+</div>
+<div id="p1" class="easyui-navpanel">
+	<header>
+		<div class="m-toolbar">
+			<div class="m-left">
+				<a href="javascript:void(0)" class="easyui-linkbutton m-back" plain="true" outline="true" onclick="$.mobile.back()">Back</a>
+			</div>
+			<span class="m-title">频道综合管理</span>
+		</div>
+	</header>
+	<ul class="m-list" style="margin:0 20px;">
+		<li><a href="javascript:void(0)" onclick="openit(this)">Large</a></li>
+		<li><a href="javascript:void(0)" onclick="openit(this)">Spotted Adult Female</a></li>
+		<li><a href="javascript:void(0)" onclick="openit(this)">Venomless</a></li>
+		<li><a href="javascript:void(0)" onclick="openit(this)">Rattleless</a></li>
+		<li><a href="javascript:void(0)" onclick="openit(this)">Green Adult</a></li>
+		<li><a href="javascript:void(0)" onclick="openit(this)">Tailless</a></li>
+		<li><a href="javascript:void(0)" onclick="openit(this)">With tail</a></li>
+		<li><a href="javascript:void(0)" onclick="openit(this)">Adult Female</a></li>
+	</ul>
+</div>
+<div id="p2" class="easyui-navpanel" >
+	<header>
+		<div class="m-toolbar">
+			<span id="p2-title" class="m-title">Detail</span>
+			<div class="m-left">
+				<a href="javascript:void(0)" class="easyui-linkbutton m-back" plain="true" outline="true" onclick="$.mobile.back()">Back1</a>
+			</div>
+		</div>
+	</header>
+	<div style="margin:50px 0 0;text-align:center">
+		<a href="javascript:void(0)" class="easyui-linkbutton" style="width:100px;height:30px" onclick="$.mobile.back()">Go Back</a>
+	</div>
+</div>
+
+
+<script type="text/javascript">
+    function openit(target){
+        console.log(target);
+        var text = $(target).text();
+        $('#p2-title').html(text);
+        $.mobile.go('#p2');
+    }
+</script>
+</body>
+</html>

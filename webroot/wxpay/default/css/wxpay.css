@@ -1,0 +1,61 @@
+@charset "utf-8";
+
+.wxpay_title
+{
+	text-align:center;
+	font-weight:bold;
+	font-size:x-large;
+}
+
+.wxpay_cont
+{
+	padding:5px;
+	width:100%;
+	display:table-cell;
+	overflow:hidden;
+	vertical-align:top;
+	word-wrap:normal;
+}
+
+.wxpay_sin_fee
+{
+	padding:5px;
+	display:table-cell;
+	font-size:x-large;
+	font-weight:bold;
+	color: #F00;
+}
+
+
+.wxpay_sp
+{
+	margin-top:5px;
+	background-color:#EEE;
+	height:10px;
+}
+
+.wxpay_item
+{
+	width:100%;
+	display:table-row;
+}
+
+.wxpay_block
+{
+}
+
+.wxpay_btn
+{
+	padding:10px;
+	background-color:#EEE;
+}
+
+.wxpay_fee
+{
+	font-weight:bold;
+	font-size:xx-large;
+	color: #F00;
+}
+
+
+

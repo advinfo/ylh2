@@ -1,0 +1,65 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+
+    <load href="__PUBLIC__/jeasyui/themes/default/easyui.css" />
+    <load href="__PUBLIC__/jeasyui/themes/icon.css" />
+    <load href="__ROOT__/admin/{$theme|default='default'}/css/base.css" />
+
+    <load href="__PUBLIC__/jeasyui/jquery.min.js" />
+    <load href="__PUBLIC__/jeasyui/jquery.easyui.min.js" />
+    <load href="__PUBLIC__/js/publicFunction.js" />
+
+    <title>Avision视频直播系统</title>
+
+
+    <script type="text/javascript">
+        window.name="winwww";
+    </script>
+
+    <style type="text/css">
+    </style>
+</head>
+<body style="text-align: left;">
+{$msg}
+<form id="f1" method="post">
+    work:<input id="work" type="text" name="work" value="{$work}" /> <br>
+    openid: <input type="text" name="openid" value="{$openid}" style="width:400px;"/> <br>
+    access_token: <input type="text" name="access_token" value="{$access_token}" style="width:400px;" /> {$expires}<br>
+    refresh_token: <input type="text" name="refresh_token" value="{$refresh_token}"  style="width:400px;" /> <br>
+
+    <input type="button" value="getUserId" onclick="$('#work').val('getUserId');submit();">
+    <input type="button" value="getUserInfo" onclick="$('#work').val('getUserInfo');submit();">
+    <input type="button" value="refresh" onclick="$('#work').val('refresh');submit();">
+    <br><br>
+    userid:<input type="text" name="userid" value="{$userid}" /> <br>
+    <input type="button" value="refreshByUserid" onclick="$('#work').val('refreshByUserid');submit();">
+    <br>
+    ====== order test =====<br>
+    out_trade_no商户唯一订单号：<input type="text" name="out_trade_no" value="{$out_trade_no}" style="width:400px;"/> <br>
+    subject订单标题：<input type="text" name="subject" value="{$subject}" style="width:400px;"/> <br>
+    body订单内容：<input type="text" name="body" value="{$body}" style="width:400px;"/> <br>
+    total_amount：<input type="text" name="total_amount" value="{$total_amount}" style="width:400px;"/> <br>
+    order_token：<input type="text" name="order_token" value="{$order_token}" style="width:400px;"/> <br>
+
+    <input type="button" value="payInit" onclick="$('#work').val('payInit');submit();">
+    <input type="button" value="Cashier" onclick="$('#work').val('Cashier');submit();">
+    <input type="button" value="CashierIframe" onclick="$('#work').val('Cashier');$('#ifr').attr('src','/home.php/Ylh/test/work/Cashier');">
+    <input type="button" value="oderQuery" onclick="$('#work').val('oderQuery');submit();">
+    <br>
+
+    <iframe id="ifr" src="/t5.html" style="border:2px solid #234; width:200px; height:200px;">
+        sss
+    </iframe>
+    <input type="button" value="showPushT3" onclick=" var dk = $(window.parent.document).find('#ifr').attr('src','http://push.av365.cn/t3.html');alert(dk); ">
+    <input type="button" value="showPU" onclick="alert(window.push);console.log(window);">
+    <a href="__APP__/Home/wxLogin">微信登录 </a>
+</form>
+
+
+</body>
+</html>

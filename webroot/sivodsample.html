@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+
+    <title>SI VOD Sample</title>
+
+    <script type="text/javascript" src="/Public/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/Public/js/jquery.md5.js"></script>
+    <script type="text/javascript">
+        /*var ywzdomain='www.av365.cn';   //vod平台
+        var path="/home.php/SI/getVodUri/vodid/7155";   //3036";
+        var account='junxing';    //对接用户账号
+        var seckey='jx_753HD';    //通信密码
+        var vodid='7155';   //'3036';   //点播文件ID
+        */
+        var ywzdomain='push.av365.cn';   //vod平台
+        var path="/home.php/SI/getVodUri2/vodid/3036";
+        var account='test2';    //对接用户账号
+        var seckey='ywzkey';    //通信密码
+        var vodid='3036';   //'3036';   //点播文件ID
+
+        var tm= (Date.parse( new Date())/1000).toString(16);
+        //console.log(tm);
+
+        function callback(data){
+            //console.log("callback!");
+            console.log(data);
+            //console.log(data.uri);
+            $("#vodwin").attr('src',data.uri);
+        }
+        //生成SI通讯用加密串
+        function makeSec(){
+            var md5=$.md5(seckey+path+account+tm);
+            return md5;
+        }
+        var md5=makeSec();
+        //console.log(md5);
+
+        function vod() {
+            tm=(Date.parse( new Date())/1000+15000).toString(16);
+            var url="http://"+ywzdomain+path+"?account="+account+"&sec="+makeSec()+"&tm="+tm+"&nickname=vodtest&callback=?";
+console.log(url);
+            $.getJSON(url,function (json) {
+                console.log(json);
+            },'jsonp');
+        }
+    </script>
+
+    <style type="text/css">
+    </style>
+</head>
+<body>
+    <input type="button" value="VOD" onclick="vod();" />
+    <video id='vodwin' src="" controls="controls">
+        您的浏览器不支持 video 标签。
+    </video>
+</body>
+</html>

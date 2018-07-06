@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<link rel="stylesheet" href="__ROOT__/home/{$theme|default='default'}/css/style.css?verson=1">
+    <title>云联直播</title>
+	<script src="__ROOT__/home/js/jquery-2.1.0.js"></script>
+	<script src="__ROOT__/home/js/swiper-4.2.2.min.js"></script>
+	<script src="__ROOT__/home/js/config.js?verson=1"></script>
+	<script src="__ROOT__/home/js/main.js?verson=1"></script>
+	<script type="text/javascript" src="__PUBLIC__/js/jquery.md5.js"></script>
+	<script type="text/javascript">
+        function goLogin()
+        {
+            var psw=$("#form1 input[name='password']").val();
+            console.log(psw);
+            console.log($.md5(psw));
+            $("#form1 input[name='password']").val($.md5(psw));
+
+            $('#form1').submit();
+        }
+
+	</script>
+</head>
+<body>
+<div class="app" id="app">
+	<div class="login-app">
+		<div class="c-banner">
+			<div class="swiper-container">
+				<div class="swiper-wrapper">
+					<!-- 循环Banner 开始 -->
+					<div class="swiper-slide">
+						<a href=""><img src="__ROOT__/home/{$theme|default='default'}/images/temp/banner_1.png" alt=""></a>
+					</div>
+					<!-- 循环Banner 结束 -->
+					<div class="swiper-slide">
+						<a href=""><img src="__ROOT__/home/{$theme|default='default'}/images/temp/list_1.png" alt=""></a>
+					</div>
+					<div class="swiper-slide">
+						<a href=""><img src="__ROOT__/home/{$theme|default='default'}/images/temp/list_2.png" alt=""></a>
+					</div>
+					<div class="swiper-slide">
+						<a href=""><img src="__ROOT__/home/{$theme|default='default'}/images/temp/list_3.png" alt=""></a>
+					</div>
+					<div class="swiper-slide">
+						<a href=""><img src="__ROOT__/home/{$theme|default='default'}/images/temp/list_5.png" alt=""></a>
+					</div>
+				</div>
+				<div class="swiper-pagination"></div>
+			</div>
+		</div>
+		<div class="c-login">
+			<img src="__ROOT__/home/{$theme|default='default'}/images/404.png" class="l-404" alt="">
+			<p style="padding-bottom: 10px;">您尚未登录，无法浏览相关内容</p>
+			<form id="form1" action="__URL__/authen" method="post">
+				<input type="text" name='account' class="l-input l-username" placeholder="请输入您的账号/手机号">
+				<input type="password" name='password' class="l-input l-password" placeholder="请输入您的密码">
+				<input type='hidden' name='chnid' value='{$chnid}' />
+				<div style="text-align: center;color:red; margin-top: 10px;">{$errorMsg}</div>
+
+				<div class="l-btn-group">
+					<a href="#" target="_blank" class="l-register">注册</a>
+					<div class="l-btn" onclick="goLogin();">登录</div>
+				</div>
+			</form>
+			<p class="l-line">或</p>
+			<a href="__APP__/Ylh/auth" class="l-link"><img src="__ROOT__/home/{$theme|default='default'}/images/logo.png" alt=""> <span>会员登陆</span></a>
+			<a href="/home.php/Home/wxLogin" ><span>微信</span></a>
+
+		</div>
+	</div>
+</div>
+
+
+</body>
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title></title>
+    <script type="text/javascript" src="/Public/js/jquery.min.js" ></script>
+</head>
+<body>
+<p>该实例演示了如何使用 addEventListener() 方法向 body 元素添加 "onbeforeunload" 事件。</p>
+<p>关闭当前窗口，按下 F5 或点击以下链接触发 onbeforeunload 事件。</p>
+<a href="http://www.qqtimezone.top">跳转地址</a>
+<script>
+//window.addEventListener("beforeunload", function(event) {
+	//alert('fffff');
+// event.returnValue ='yyyyyyyyyyyyyy';
+//});
+window.onbeforeunload = function(event) {
+	 event.returnValue = "我在这写点东西...";
+	};
+$.post('http://push.av365.cn/home.php/Player/heartbeatJson?onlineID[]=3811131&onlineID[]=3811132',function (data) {
+    //console.log(data);
+    $("#content").html(data);
+});
+if(window.history){
+    history.replaceState(null,null,"http://localhost:8002/t6.html?usr=123");
+}else{
+    console.log('not support!');
+}
+</script>
+<div id="content"></div>
+</body>
+</html>

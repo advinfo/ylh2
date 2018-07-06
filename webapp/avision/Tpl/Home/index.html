@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="__ROOT__/home/{$theme|default='default'}/css/style.css?verson=1">
+
+    <title>云联直播</title>
+</head>
+<body>
+<div class="app" id="app">
+	<div class="home-app" id="scroll-container">
+		<div class="c-banner">
+			<div class="swiper-container">
+				<div class="swiper-wrapper">
+					<!-- 循环Banner 开始 -->
+					<div class="swiper-slide">
+						<a href=""><img src="__ROOT__/home/{$theme|default='default'}/images/temp/banner_1.png" alt=""></a>
+					</div>
+					<!-- 循环Banner 结束 -->
+					<div class="swiper-slide">
+						<a href=""><img src="__ROOT__/home/{$theme|default='default'}/images/temp/list_1.png" alt=""></a>
+					</div>
+					<div class="swiper-slide">
+						<a href=""><img src="__ROOT__/home/{$theme|default='default'}/images/temp/list_2.png" alt=""></a>
+					</div>
+					<div class="swiper-slide">
+						<a href=""><img src="__ROOT__/home/{$theme|default='default'}/images/temp/list_3.png" alt=""></a>
+					</div>
+					<div class="swiper-slide">
+						<a href=""><img src="__ROOT__/home/{$theme|default='default'}/images/temp/list_6.png" alt=""></a>
+					</div>
+				</div>
+				<div class="swiper-pagination"></div>
+			</div>
+		</div>
+		<div class="c-list">
+			<div class="list-bar">
+				 <a href="javascript:;" onclick="list_change(this,'hot')" class="active">最热</a>
+				 <a href="javascript:;" onclick="list_change(this,'recommend')" >推荐</a>
+				 <a href="javascript:;" onclick="list_change(this,'type')" >分类</a>
+				 <a href="javascript:;" onclick="list_change(this,'time')" >时间</a>
+				[{$userName}]
+			</div>
+			<div class="list-container" id="list-container">
+
+            </div>
+
+			<div class="loading" id="loading">
+				<img src="__ROOT__/home/{$theme|default='default'}/images/loading.png" alt="">正在加载
+			</div>
+		</div>
+	</div>
+	<div class="footer">
+		<a href="__URL__/logout?scrType=h" class="footer-link active">
+			<div class="footer-img">
+				<img src="__ROOT__/home/{$theme|default='default'}/images/icon/footer_home.png" alt="">
+				<img src="__ROOT__/home/{$theme|default='default'}/images/icon/footer_home_active.png" alt="">
+			</div>
+			<span>退出</span>
+		</a>
+		<a href="" class="footer-link">
+			<div class="footer-img">
+				<img src="__ROOT__/home/{$theme|default='default'}/images/icon/footer_found.png" alt="">
+				<img src="__ROOT__/home/{$theme|default='default'}/images/icon/footer_found_acitve.png" alt="">
+			</div>
+			<span>发现</span>
+		</a>
+		<a href="__APP__/Console/myaccount" class="footer-link">
+			<div class="footer-img">
+				<img src="__ROOT__/home/{$theme|default='default'}/images/icon/footer_my.png" alt="">
+				<img src="__ROOT__/home/{$theme|default='default'}/images/icon/footer_my_active.png" alt="">
+			</div>
+			<span>我的</span>
+		</a>
+	</div>
+</div>
+
+<script src="__ROOT__/home/js/jquery-2.1.0.js"></script>
+<script src="__ROOT__/home/js/swiper-4.2.2.min.js"></script>
+<script src="__ROOT__/home/js/config.js?verson=1"></script>
+<script src="__ROOT__/home/js/main.js?verson=1"></script>
+<!-- 频道信息 -->
+<script src="__ROOT__/home/js/room.js?verson=1"></script>
+</body>
+</html>

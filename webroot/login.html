@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="css/style.css?v=2">
+    <title>云联直播首页</title>
+</head>
+<body>
+<div class="app" id="app">
+	<div class="login-app app-container">
+		<div class="c-banner">
+			<div class="banner-container">
+				<div class="swiper-wrapper" id="banner"></div>
+				<div class="swiper-pagination"></div>
+			</div>
+		</div>
+		<div class="c-login">
+			<img src="img/404.png" class="l-404" alt="">
+			<p style="padding-bottom: 10px;">您尚未登录，无法浏览相关内容</p>
+			<form action="" id="login-form">
+				<input type="text" class="l-input l-username" name="account" placeholder="请输入您的账号/手机号">
+				<input type="password" class="l-input l-password" name="password" onclick="this.value = null" placeholder="请输入您的密码">
+				<p class="l-tips"></p>
+				<div class="l-btn-group">
+					<a href="#" target="_blank" class="l-register">注册</a>
+					<a href="javascript:Login.doLogin();" class="l-btn">登陆</a>
+				</div>
+			</form>
+			<p class="l-line">或</p>
+			<div class="l-link" id="l-link"></div>
+		</div>
+	</div>
+</div>
+
+<script src="js/jquery-2.1.0.js"></script>
+<script src="js/jquery.md5.js"></script>
+<script src="js/swiper-4.2.2.min.js"></script>
+<script src="js/config.js?v=2"></script>
+<script src="js/main.js?v=2"></script>
+</body>
+</html>

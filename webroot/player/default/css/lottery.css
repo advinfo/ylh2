@@ -1,0 +1,27 @@
+/**
+ * 抽奖窗口样式定义
+ */
+
+/* 抽奖信息容器 */
+.lotteryContiner{
+    margin: 0 auto; border: 2px solid #ff1;
+    position: fixed; z-index: 16;  bottom:40px;  opacity:.9;
+    color: #fff;
+}
+
+/* 抽奖信息显示窗口 */
+#lotteryMsgCont{
+    position: fixed; width: 100%;  bottom:50px;
+    display: flex; align-items: center;flex-direction:column;
+}
+
+#lotteryMsgCont .popup{
+    /* background: url(../images/cj2.png) no-repeat center top -60px; */
+    overflow: hidden ;
+    border-radius: 20px 20px 10px 10px;
+    background: #dc523d;
+    border: 1px solid #811; height: 199px; width:80%;
+    padding: 40px 10px 10px 10px;
+    color:yellow;
+    font-size:16px; line-height: 22px;
+}
