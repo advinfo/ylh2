@@ -11,6 +11,10 @@ require_once LIB_PATH.'Model/GiveModel.php';
 require_once LIB_PATH.'Model/JewelboxModel.php';
 require_once LIB_PATH.'Model/GoodsModel.php';
 require_once LIB_PATH.'Model/ChannelModel.php';
+require_once LIB_PATH.'Model/ConsumpModel.php';
+require_once(LIB_PATH.'Model/PrepayModel.php');
+
+require_once COMMON_PATH.'pay/PayBase.class.php';
 
 class GiveAction extends SafeAction{
     const GIFT_CATEGORY='virtual';
@@ -165,8 +169,69 @@ class GiveAction extends SafeAction{
         }
         return 0;
     }
-
+    //送礼商品不足时弹出购买界面
     public function askBuy(){
-        echo 'buybuybuy';
+        $webVarTpl=array('chnId'=>0,'goodsId'=>0,'qty'=>0,'sender'=>0,'receiver'=>0, 'qtyInBox'=>0);
+        $webVar=getRec($webVarTpl,false);   //没传入新值，则保留默认值
+        $webVar['buyQty']=$webVar['qty']-$webVar['qtyInBox'];   //需要购买的数量
+        try{
+            if(1>$webVar['chnId'] || 1>$webVar['goodsId']) throw new Exception('参数错误！');
+            if($webVar['qty']<=$webVar['qtyInBox']) throw new Exception('土豪！');
+            $uid=$this->userId();
+            if(1>$uid || $uid != $webVar['sender']) throw new Exception('不知道谁送的礼！');
+
+            $dbGoods=D('Goods');
+            $cond=array('id'=>$webVar['goodsId'],'category'=>self::GIFT_CATEGORY,'status'=>'正常');
+            $goodsRec=$dbGoods->where($cond)->find();
+//echo $dbGoods->getLastSql();
+//dump($goodsRec);
+            if(count($goodsRec)<1 ) throw new Exception('找不到要赠送的礼物');
+            $webVar['goodsName']=$goodsRec['name'];
+            $webVar['unitPrice']=$goodsRec['price_c'];
+            $webVar['amount']=$webVar['unitPrice']*$webVar['buyQty'];
+
+        }catch (Exception $e){
+            echo $e->getMessage();
+            return; //出现异常只可能是非法调用因此不考虑界面
+        }
+        $this->assign($webVar);
+        $tm=date('YmdHis', time());
+
+        $this->display();
+    }
+
+    //支付，并显示支付结果
+    public function launchPay(){
+        //dump($_REQUEST);
+        $webVar=array();
+        $prepay=D('Prepay');
+        //填写新记录数据
+        $prepay->userid=$this->userId();
+        $prepay->stat='等待付款';
+        $prepay->totalfee=$_POST['amount']; //订单总金额
+        $prepay->paytype=$_POST['paychannel'];
+        //$prepay->ellerid=0;   //销售这用户ID，当前没有商家，默认是系统账号system
+        $prepay->subject="购买{$_POST['buyQty']}个，{$_POST['goodsName']}。";
+        $prepay->attrArr=array(
+            "detail"=>array(    //订单明细列表，一张订单可能有多种货物
+                array("goodsId"=>$_POST['goodsId'], "goodsName"=>$_POST['goodsName'], "unitPrice"=>$_POST['unitPrice'], "qty"=>$_POST['buyQty'])
+            ),
+            "sender"=>$_POST['sender'], //送礼者
+            "receiver"=>$_POST['receiver'],     //收礼者
+            "chnId"=>$_POST['chnId']        //发生的频道
+        );
+        try{
+            //业务对象实例
+            $pay=PayBase::instance($_POST['paychannel']);
+            if(null==$pay) throw new Exception('不支持此支付通道：'.$_POST['paychannel']);
+            $pay->bindData($prepay);
+            $tradeno=$pay->createOrder();    //内部进行数据合理校验，抛出错误.正常返回订单号
+            $pay->pay();
+            $webVar['msg']="付款成功";
+        }catch (Exception $ex){
+            $webVar['msg']= $ex->getMessage();
+        }
+        $this->assign($webVar);
+        $this->display();
     }
 }

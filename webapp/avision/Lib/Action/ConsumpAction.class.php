@@ -242,6 +242,9 @@ class ConsumpAction extends AdminBaseAction{
 				try{
 					if(0==$webVar['recharge'] ||''==$webVar['recharge']) throw new Exception('不能充值0元！');
 					$dbConsump->addRec($record);
+                    $balance=$dbConsump->getBalance($user['id']);
+                    //设置网页变量
+                    $webVar['point']=(null==$balance)?0: number_format($balance);	//网真点
 					$webVar['errmsg']='充值成功。';
 				}catch (Exception $e){
 					logfile($e->getMessage(),3);

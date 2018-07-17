@@ -1,13 +1,19 @@
 <?php
 /**
  * 预付款、订单对象模型
+ * !!重要!!本model有非标准的跨项目引用，在本文件中不能使用项目路径相关的常量
  */
 
-//require_once APP_PATH.'../public/Authorize.Class.php';
 class PrepayModel extends Model {
 
+    protected $m_record=array();    //订单记录缓存，同表结构。attrArr把attr的Json展开成数组
 
-
+    public function __set($field,$value){
+        $this->m_record[$field]=$value;
+    }
+    public function __get($field){
+        return $this->m_record[$field];
+    }
 	/**
 	 * 
 	 * 新增一条预付单(将废弃)
@@ -23,10 +29,10 @@ class PrepayModel extends Model {
 		$attr['callback'] = $para['callback'];
 		$pay = array();
 		$pay['userid'] = $para['userid'];
-		$pay['attr'] = json_encode($attr);
+		$pay['attr'] = json_encode2($attr);
 		$pay['state'] = '等待付款';
 		$pay['totalfee'] = $para['totalfee'];
-		$pay['tradeno'] = date('YmdHis', time()).substr(microtime(), 2, 6);
+		$pay['tradeno'] = $this->getTradeno();  //date('YmdHis', time()).substr(microtime(), 2, 6);
 		$pay['createtime'] = time();
 		$pay['createstr'] = date('Y-m-d H:i:s', time());
 		$newid = $this->add($pay);
@@ -60,36 +66,22 @@ class PrepayModel extends Model {
 
 
     /**
-     * 添加新的预付订单
-     * @param string $subject  订单标题
-     * @param int $totalAmt 订单总金额
-     * @param array $detail 订单清单
-     * @param int $sellerid 销售商户ID
-     * @return int  新的订单ID
+     * 根据缓存数据添加新的预付订单
+
+     * @return int  新的订单记录ID
      * @throws Exception
      */
-    /*
-	public function newOrder($subject,$totalAmt=0,$detail=null,$sellerid=0){
-	    $author=new authorize();
-	    if(!$author->isLogin()) throw new Exception('请先登录。');
-        if(mb_strlen($subject)<4) throw new Exception('必须填写订单摘要');
-        if(0==$sellerid) throw new Exception('必须提供商户ID');
+	public function newOrder(){
+        $this->m_record['tradeno'] = $this->getTradeno();  //date('YmdHis', time()).substr(microtime(), 2, 6);
+        $this->m_record['createtime'] = time();
+        $this->m_record['createstr'] = date('Y-m-d H:i:s', time());
+        $this->m_record['attr']=json_encode2($this->m_record['attrArr']);
 
-        $rec=array();
-        $rec['userid']=$author->getUserInfo('userId');
-        $rec['state']='等待付款';
-        $rec['totalfee']=$totalAmt;
-        $rec['tradeno']=$this->getTradeno();
-        $rec['sellerid']=$sellerid;
-        $rec['subject']=$subject;
-        $rec['createtime']=time();
-        if(is_array($detail)) $rec['attr']=json_encode(array('detail'=>$detail),JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE);
-	    //dump($rec);
-
-        $prepayid=$this->add($rec);
+        $prepayid=$this->add($this->m_record);
         if(1>$prepayid) throw new Exception('添加订单失败.');
+        $this->m_record['id']=$prepayid;
         return $prepayid;
-    }*/
+    }
     /**
      * 生成不可能重复的订单号
      * @return string

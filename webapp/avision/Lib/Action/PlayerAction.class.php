@@ -88,7 +88,7 @@ class PlayerAction extends SafeAction {
             $ret['hbinterval']=C('aliveTime');
             $ret['activeinterval']=600;
             $ret['topimg']=R('Channel/getPosterImgUrl', array($this->chnRec['attr'],$chnid));
-            $ret['intr']=$this->chnRec['attr']['info'];
+            $ret['intr']=isset($this->chnRec['attr']['info'])?$this->chnRec['attr']['info']:array();
             $ret['airtime']=strtotime($this->chnRec['attr']['livetime']);
 
             //查看是否有推流

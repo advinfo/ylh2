@@ -13,7 +13,8 @@ require_once(LIB_PATH.'Model/DictionaryModel.php');
 class ChannelModel extends Model {
 	//默认返回的频道字段可通过接口修改
 	protected $m_fields='id,name,connectkey';
-	
+	protected $tabs=array(101=>'频道介绍', 102=>'互动聊天', 103=>'排行榜', 104=>'点播资源', 105=>'图片直播');	//频道播放界面支持的功能标签
+	protected $extFuncs=array(501=>"送礼",502=>"抽奖",503=>"红包");	//频道使用的扩展功能
 	/**
 	 * @brief 设置需要返回的字段，字段间用逗号分隔
 	 * 
@@ -149,9 +150,9 @@ class ChannelModel extends Model {
 	//获取频道属性字段数组
 	public function getAttrArray($id){
 		$chnInfo = $this->field('attr')->where(array('id' => $id))->find();
-
-		$attr = json_decode($chnInfo['attr'], true);
-
+		if(is_array($chnInfo))
+			$attr = json_decode($chnInfo['attr'], true);
+		else $attr=array();
 		return $attr;
 	}
 
@@ -931,6 +932,58 @@ class ChannelModel extends Model {
 	public function getTabs2($attr){
         $ret=array('tabs'=>$attr['tabs'],'activetab'=>$attr['activetab']);
         return  $ret;
+	}
+
+    /**
+	 * 输出指定频道的tabs记录数组用于编辑
+	 * 字段：val-编码；text-频道播放界面显示的标签文字,播主可以修改；name-标签名称；use-频道是否使用Y/N；order-显示顺序;defalut-进入频道时激活Y/N
+     * @param $id	频道ID
+     */
+	public function getTabs4Edit($id){
+		//全部标签记录
+		$tabRecs=array();
+		foreach ($this->tabs as $k=>$v){
+			$tabRecs[$k]=array('val'=>$k, 'text'=>$v, 'name'=>$v, 'order'=>100, 'use'=>'N', 'default'=>'N');
+		}
+		//读取当前频道使用的标签记录，填写完整的标签记录
+		$attr=$this->getAttrArray($id);
+		$nowTabs=isset($attr['tabs']) ? $attr['tabs'] : array();
+		$default=isset($attr['activetab']) ? $attr['activetab'] :0 ;
+		foreach ($nowTabs as $v){
+			$val=$v['val'];
+			$tabRecs[$val]['text']=$v['text'];		//标签文本
+			$tabRecs[$val]['use']='Y';
+			$tabRecs[$val]['order']=$v['order'];	//显示顺序
+		}
+		if(isset($tabRecs[$default])) $tabRecs[$default]['default']='Y';
+
+		//插入扩展功能选择
+        foreach ($this->extFuncs as $k=>$v){
+            $tabRecs[$k]=array('val'=>$k, 'text'=>$v, 'name'=>$v, 'order'=>100, 'use'=>'N', 'default'=>'N');
+        }
+        $nowFuncs=isset($attr['extFuncs']) ? $attr['extFuncs'] : array();
+        foreach ($nowFuncs as $v){
+            $val=$v['val'];
+            $tabRecs[$val]['text']=$v['text'];		//标签文本
+            $tabRecs[$val]['use']='Y';
+            $tabRecs[$val]['order']=$v['order'];	//显示顺序
+        }
+		return $tabRecs;
+	}
+
+    /**
+	 * 更新频道tabs及选用扩展功能的属性记录
+     * @param $id
+     * @param $tabs
+     * @param $activetab
+     * @param $extFuncs
+     */
+	public function setTabs($id,$tabs,$activetab,$extFuncs){
+		$attr=$this->getAttrArray($id);
+		$attr['tabs']=$tabs;
+		$attr['activetab']=$activetab;
+		$attr['extFuncs']=$extFuncs;
+        updateExtAttr($this,"id=".$id,$attr);
 	}
 }
 ?>

@@ -83,6 +83,25 @@ function DivLoadHtml(urlstr, divId, formdata)
 	});
 }
 
+function DivLoadHtmlPost(urlstr, divId, formdata)
+{
+    if(null == formdata)
+    {
+        formdata = {};
+    }
+    $.ajax({
+        url: urlstr,
+        data: formdata,
+        type:"POST",
+        success: function(data){
+            $('#'+divId).html(data);
+            //alert('tobe parese');
+            $.parser.parse('#'+divId);
+        },
+        dataType: 'html'
+    });
+}
+
 function DivLoadText(urlstr, divId, node)
 {
 	$.ajax({

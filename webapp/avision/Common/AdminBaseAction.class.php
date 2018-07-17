@@ -1,6 +1,7 @@
 <?php
 require_once APP_PATH.'../public/SafeAction.Class.php';
 require_once APP_PATH.'../public/AdminMenu.class.php';
+require_once APP_PATH.'../public/CommonFun.php';
 
 class AdminBaseAction extends SafeAction {
 	protected $isLogin='false';	//是否已登录标志，anonymous用户被排除
@@ -9,8 +10,12 @@ class AdminBaseAction extends SafeAction {
 	protected $themeAdmin='default';	//管理界面主题
 	protected $auth=null;	//授权对象
 	
-	function __construct(){
-		parent::__construct(1,'Home/index');
+	function __construct($loginUrl=''){
+	    if(null==$loginUrl){
+	        //没传入登录地址
+            $loginUrl=(IsMobile())?'/ui/#/login':U('Home/index');   //根据PC或手机转移不同的登录页面
+        }
+		parent::__construct(2,$loginUrl);
 		//setPara('scrType', 'w');	//目前仅支持宽屏模板
 		$this->setIdentity();
     		

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+
+    <load href="__PUBLIC__/jeasyui/themes/material-teal/easyui.css" />
+    <load href="__PUBLIC__/jeasyui/themes/icon.css" />
+    <load href="__PUBLIC__/jeasyui/themes/color.css" />
+
+    <load href="__PUBLIC__/jeasyui/jquery.min.js" />
+    <load href="__PUBLIC__/jeasyui/jquery.easyui.min.js" />
+    <load href="__PUBLIC__/jeasyui/jquery.edatagrid.js" />
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/jeasyui/themes/mobile.css">
+    <script type="text/javascript" src="__PUBLIC__/jeasyui/jquery.easyui.mobile.js"></script>
+    <load href="__PUBLIC__/js/publicFunction.js"/>
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $("#buyQty").textbox("textbox").css('background','yellow');
+        });
+
+        //修改购买数量时计算并显示总金额
+        function onChangeBuyQty(newValue,oldValue){
+
+            var unitPrice=$("#unitPrice").textbox("getValue");
+            var buyQty=$("#buyQty").textbox("getValue");
+            var amount=unitPrice*buyQty;
+            console.log(unitPrice);
+            console.log(buyQty);
+            console.log(amount);
+            $("#amount").textbox("setValue",amount);
+        }
+
+        //ajax调用后台支付并等待返回结果
+        function launchPay(paychannel) {
+            var para=$("#buygift").serialize();
+            para +="&paychannel="+paychannel;
+            console.log(para);
+            $.mobile.go('#payResult');
+            DivLoadHtmlPost("__URL__/launchPay","payResult",para);
+
+
+        }
+    </script>
+
+    <style type="text/css">
+    </style>
+</head>
+<body>
+<div class="easyui-navpanel">
+    <header>
+        <div class="m-toolbar">
+            <div class="m-left">
+                <equal name="showCond" value="true" >
+                    <a href="javascript:void(0)" class="easyui-linkbutton m-back" plain="true" outline="true" onclick="$.mobile.back()">返回</a>
+                </equal>
+            </div>
+            <span class="m-title ">您宝箱内礼物数量不足，现在立即购买</span>
+        </div>
+    </header>
+    <div style="margin:20px auto; width:80%; text-align:center; ">
+
+        <form id="buygift" method="post" style="margin-top: 20px;">
+            <div style="margin-bottom:20px;white-space: nowrap;">
+                <input class="easyui-textbox" name="goodsName" value="{$goodsName}" style="width:100%" data-options="label:'礼物名称:', readonly:true ">
+            </div>
+            <div style="margin-bottom:20px;white-space: nowrap;">
+                <input id="unitPrice" class="easyui-textbox" name="unitPrice" value="{$unitPrice}" style="width:100%" data-options="label:'单价(点):', readonly:true ">
+            </div>
+            <div style="margin-bottom:20px;white-space: nowrap;">
+                <input id="buyQty" class="easyui-textbox" name="buyQty" value="{$buyQty}" style="width:100%" data-options="label:'购买数量:',
+                    onChange:onChangeBuyQty ">
+            </div>
+            <div style="margin-bottom:20px;white-space: nowrap;">
+                <input id="amount" class="easyui-textbox" name="amount" value="{$amount}" style="width:100%" data-options="label:'总金额(点):',editable:false">
+            </div>
+            <input type="hidden" name="work" value="buy">
+            <input type="hidden" name="chnId" value="{$chnId}">
+            <input type="hidden" name="goodsId" value="{$goodsId}">
+            <input type="hidden" name="sender" value="{$sender}">
+            <input type="hidden" name="receiver" value="{$receiver}">
+        </form>
+        <div style="text-align:center;padding:5px 0">
+            <a href="javascript:void(0)" class="easyui-linkbutton c6" onclick="launchPay('POINT');" style="width:80px;" >点数支付</a>
+            <div style="display:inline-block; width: 10px;"></div>
+            <a href="javascript:void(0)" class="easyui-linkbutton c7" onclick="launchPay('WX');" style="width:80px" >微信支付</a>
+        </div>
+        <div style="font-size: 0.8em; color: #aaa">Tips: 多买些礼物放在宝箱里，以后送礼就方便了</div>
+    </div>
+</div>
+<div id="payResult" class="easyui-navpanel">
+    <header>
+        <div class="m-toolbar">
+            <div class="m-left">
+
+                <a href="javascript:void(0)" class="easyui-linkbutton m-back" plain="true" outline="true" onclick="$.mobile.back()">返回</a>
+
+            </div>
+            <span class="m-title ">支付结果</span>
+        </div>
+    </header>
+    等待支付结果
+    {$payResultHtml}
+</div>
+
+</body>
+</html>

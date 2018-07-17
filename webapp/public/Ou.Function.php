@@ -262,7 +262,7 @@ function updateExtAttr($model,$cond,$attrArr,$attrName=null,$field='attr'){
 		$fullAttr=getExtAttr($model,$cond,null,$field);
 		$fullAttr[$attrName]=$attrArr;
 	}
-	$attrStr=json_encode($fullAttr);
+	$attrStr=json_encode2($fullAttr);
 	$result=$model->where($cond)->save(array($field=>$attrStr));
 	//echo $this->getLastSql();
 	return $result;

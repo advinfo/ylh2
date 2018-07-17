@@ -42,8 +42,9 @@ class SafeAction extends Action {
 	 * @param int $type	登录超时类型=1 有超时，=2不考虑超时
 	 * @param string $loginURL 当用试图进入无权使用的功能时要跳转到的页面。默认Index/index若传入back会回到前一页面。
 	 */
-	function __construct($type=1,$loginURL='Index/index'){
-		parent::__construct(); 
+	function __construct($type=1,$loginURL=''){
+		parent::__construct();
+		if(''==$loginURL) $loginURL=U('Index/index');
 		$mysession=getPara('mysession');	//如果提供了session ID
 		if(null != $mysession) session_id($mysession);
 		session_start(array('cookie_lifetime'=>2400));//40分生命周期,因为要上传500M录像
@@ -78,7 +79,8 @@ class SafeAction extends Action {
 					echo "<script>alert('你无权使用这项功能。');javascript:history.back(1);</script>";
 				}else {
 					setPara('rejectMsg', '你无权使用这项功能');
-					$this->redirect($loginURL);
+					//$this->redirect($loginURL);
+                    header("Location:".$loginURL);
 				}
 			}else{
 				if($this->author->isProtectAction(MODULE_NAME,ACTION_NAME))
@@ -92,7 +94,8 @@ class SafeAction extends Action {
 				if('back'==$loginURL){
 					echo "<script>alert('请先登录。');javascript:history.back(1);</script>";
 				}else {
-					$this->redirect($loginURL);
+					//$this->redirect($loginURL);
+                    header("Location:".$loginURL);
 				}
 			}
 			//但未受保护的功能可以不登录运行

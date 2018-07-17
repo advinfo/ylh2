@@ -3,13 +3,15 @@
  * @file
  * @brief 阿里云短讯接口
  * @author Rocky
- * @date 2017-01-03
+ * @date 2018-01-08
  * 
  * 
  * 
  */
 
-require_once APP_PUBLIC.'CommonFun.php';
+require_once APP_PATH.'../public/aliyun/SignatureHelper.php';
+require_once APP_PATH.'../public/aliyun/Sms.Config.php';
+require_once APP_PATH.'../public/CommonFun.php';
 require_once LIB_PATH.'Model/MessageModel.php';
 
 class Sms
@@ -23,7 +25,7 @@ class Sms
 	//注册验证动作
 	protected $actReg = 'regist';
 	//限制24小时内发送的次数
-	protected $sendlimit = 10;
+	protected $sendlimit = 100;
 	//message表操作对象
 	protected $msgDal = null;
 
@@ -50,50 +52,94 @@ class Sms
 	}
 
 	/*
+	 * 发短信通用接口
+	 * $phone 电话号码
+	 * $signname 签名名称
+	 * $tmp 模板编号
+	 * $var 模板变量 格式'{"code":"123"}'
+	 */
+	public function sendSmsCom($phone, $signname, $tmp, $var = array()){
+
+		$params = array ();
+
+		// *** 需用户填写部分 ***
+
+		// fixme 必填: 请参阅 https://ak-console.aliyun.com/ 取得您的AK信息
+		$accessKeyId = ALI_AccKey;
+		$accessKeySecret = ALI_AccSecret;
+
+		// fixme 必填: 短信接收号码
+		$params["PhoneNumbers"] = $phone;
+
+		// fixme 必填: 短信签名，应严格按"签名名称"填写，请参考: https://dysms.console.aliyun.com/dysms.htm#/develop/sign
+		$params["SignName"] = $signname;
+
+		// fixme 必填: 短信模板Code，应严格按"模板CODE"填写, 请参考: https://dysms.console.aliyun.com/dysms.htm#/develop/template
+		$params["TemplateCode"] = $tmp;
+
+		// fixme 可选: 设置模板参数, 假如模板中存在变量需要替换则为必填项
+		$params["TemplateParam"] = $var;
+
+		// fixme 可选: 设置发送短信流水号
+		//$params['OutId'] = "12345";
+
+		// fixme 可选: 上行短信扩展码, 扩展码字段控制在7位或以下，无特殊需求用户请忽略此字段
+		//$params['SmsUpExtendCode'] = "1234567";
+
+
+		// *** 需用户填写部分结束, 以下代码若无必要无需更改 ***
+		if(!empty($params["TemplateParam"]) && is_array($params["TemplateParam"])) {
+			$params["TemplateParam_json"] = json_encode($params["TemplateParam"], JSON_UNESCAPED_UNICODE);
+		}
+
+		if(null == $params["TemplateParam_json"])
+			$params["TemplateParam"] = json_encode($params["TemplateParam"]);
+
+		// 初始化SignatureHelper实例用于设置参数，签名以及发送请求
+		$helper = new SignatureHelper();
+
+		// 此处可能会抛出异常，注意catch
+		try
+		{
+			$content = $helper->request(
+				$accessKeyId,
+				$accessKeySecret,
+				"dysmsapi.aliyuncs.com",
+				array_merge($params, array(
+					"RegionId" => "cn-hangzhou",
+					"Action" => "SendSms",
+					"Version" => "2017-05-25",
+				))
+			);
+
+			if('ok' == $content->Message)
+			{
+				return '';
+			}
+		}
+		catch(Exception $e)
+		{
+			return $e->getMessage();
+		}
+
+		return $content;
+	}
+
+	/*
 	 * 通过阿里接口发送短信
 	 */
 	public function sendSmsTmp($phone, $code, $tmp)
 	{
-		require_once ALI_SMS_PATH.'aliyun-php-sdk-core/Regions/ProductDomain.php';
-		require_once ALI_SMS_PATH.'aliyun-php-sdk-core/Regions/Endpoint.php';
-		require_once ALI_SMS_PATH.'aliyun-php-sdk-core/Regions/EndpointProvider.php';
-		require_once ALI_SMS_PATH.'aliyun-php-sdk-core/Config.php';
-		require_once ALI_SMS_PATH.'aliyun-php-sdk-core/Profile/IClientProfile.php';
-		require_once ALI_SMS_PATH.'aliyun-php-sdk-core/IAcsClient.php';
-		require_once ALI_SMS_PATH.'aliyun-php-sdk-core/Profile/DefaultProfile.php';
-		require_once ALI_SMS_PATH.'aliyun-php-sdk-core/DefaultAcsClient.php';
-		require_once ALI_SMS_PATH.'aliyun-php-sdk-core/Exception/ClientException.php';
-		require_once ALI_SMS_PATH.'aliyun-php-sdk-core/Http/HttpHelper.php';
-		require_once ALI_SMS_PATH.'aliyun-php-sdk-core/Http/HttpResponse.php';
-		require_once ALI_SMS_PATH.'aliyun-php-sdk-core/Auth/ISigner.php';
-		require_once ALI_SMS_PATH.'aliyun-php-sdk-core/Auth/ShaHmac1Signer.php';
-		require_once ALI_SMS_PATH.'aliyun-php-sdk-core/Auth/Credential.php';
-		require_once ALI_SMS_PATH.'aliyun-php-sdk-core/AcsRequest.php';
-		require_once ALI_SMS_PATH.'aliyun-php-sdk-core/RpcAcsRequest.php';
-		require_once ALI_SMS_PATH.'aliyun-php-sdk-sms/Sms/Request/V20160927/SingleSendSmsRequest.php';
-		
-		$iClientProfile = DefaultProfile::getProfile("cn-hangzhou", "LTAIHIJJOExv9Dqv", "uq9PjUwvCts4Sdomytl6ciEiCw3Cxr");
-		$client = new DefaultAcsClient($iClientProfile);
-		$request = new SingleSendSmsRequest();
-		$request->setSignName("易网真");//签名名称
-		$request->setTemplateCode($tmp);//模板code
-		$request->setRecNum($phone);//目标手机号
-		$request->setParamString("{\"code\":\"".$code."\"}");//模板变量，数字一定要转换为字符串
 		try
 		{
-			$response = $client->getAcsResponse($request);
+			$para = array();
+			$para['code'] = $code;
+			$para['product'] = '易网真';
+			$this->sendSmsCom($phone, '易网真', $tmp, $para);
 		}
 		catch (ClientException $e)
 		{
-			//print_r($e->getErrorCode());
-			return $e->getErrorMessage();
 		}
-		catch (ServerException $e)
-		{
-			//print_r($e->getErrorCode());
-			return $e->getErrorMessage();
-		}
-
 		return '';
 	}
 
@@ -102,51 +148,16 @@ class Sms
 	 */
 	protected function SendSms($phone, $code)
 	{
-		//just for test
-		//echo $this->RetJson('SendSms phone:'.$phone.' code:'.$code, 'true');
-		//echo $this->RetJson('', 'true');
-		//exit;
-		require_once ALI_SMS_PATH.'aliyun-php-sdk-core/Regions/ProductDomain.php';
-		require_once ALI_SMS_PATH.'aliyun-php-sdk-core/Regions/Endpoint.php';
-		require_once ALI_SMS_PATH.'aliyun-php-sdk-core/Regions/EndpointProvider.php';
-		require_once ALI_SMS_PATH.'aliyun-php-sdk-core/Config.php';
-		require_once ALI_SMS_PATH.'aliyun-php-sdk-core/Profile/IClientProfile.php';
-		require_once ALI_SMS_PATH.'aliyun-php-sdk-core/IAcsClient.php';
-		require_once ALI_SMS_PATH.'aliyun-php-sdk-core/Profile/DefaultProfile.php';
-		require_once ALI_SMS_PATH.'aliyun-php-sdk-core/DefaultAcsClient.php';
-		require_once ALI_SMS_PATH.'aliyun-php-sdk-core/Exception/ClientException.php';
-		require_once ALI_SMS_PATH.'aliyun-php-sdk-core/Http/HttpHelper.php';
-		require_once ALI_SMS_PATH.'aliyun-php-sdk-core/Http/HttpResponse.php';
-		require_once ALI_SMS_PATH.'aliyun-php-sdk-core/Auth/ISigner.php';
-		require_once ALI_SMS_PATH.'aliyun-php-sdk-core/Auth/ShaHmac1Signer.php';
-		require_once ALI_SMS_PATH.'aliyun-php-sdk-core/Auth/Credential.php';
-		require_once ALI_SMS_PATH.'aliyun-php-sdk-core/AcsRequest.php';
-		require_once ALI_SMS_PATH.'aliyun-php-sdk-core/RpcAcsRequest.php';
-		require_once ALI_SMS_PATH.'aliyun-php-sdk-sms/Sms/Request/V20160927/SingleSendSmsRequest.php';
-		
-
-		$iClientProfile = DefaultProfile::getProfile("cn-hangzhou", "LTAIHIJJOExv9Dqv", "uq9PjUwvCts4Sdomytl6ciEiCw3Cxr");
-		$client = new DefaultAcsClient($iClientProfile);
-		$request = new SingleSendSmsRequest();
-		$request->setSignName("易网真");//签名名称
-		$request->setTemplateCode("SMS_37125132");//模板code
-		$request->setRecNum($phone);//目标手机号
-		$request->setParamString("{\"code\":\"".$code."\",\"product\":\"易网真\"}");//模板变量，数字一定要转换为字符串
 		try
 		{
-			$response = $client->getAcsResponse($request);
+			$para = array();
+			$para['code'] = $code;
+			$para['product'] = '易网真';
+			$this->sendSmsCom($phone, '易网真', 'SMS_37125132', $para);
 		}
 		catch (ClientException $e)
 		{
-			//print_r($e->getErrorCode());
-			return $e->getErrorMessage();
 		}
-		catch (ServerException $e)
-		{
-			//print_r($e->getErrorCode());
-			return $e->getErrorMessage();
-		}
-
 		return '';
 	}
 
@@ -239,7 +250,12 @@ class Sms
 				$this->AddMessage($code);
 
 				//发送短讯
-				$msg = $this->SendSms($phone, $code);
+				//$msg = $this->SendSms($phone, $code);
+				$parm = array();
+				$parm['code'] = $code;
+				$parm['product'] = '易网真';
+				$msg = $this->sendSmsCom($phone, '易网真', 'SMS_37125132', $parm);
+				$msg = null;
 				if(empty($msg))
 				{
 					return $this->RetJson('发送成功');
@@ -255,60 +271,6 @@ class Sms
 				return $this->RetJson('24小时内限制发送次数：'.$this->sendlimit, 'false');
 			}
 		}
-	}
-
-
-	/*
-	 * 发送活动通知短信
-	 */
-	public function SendNoticeSms($phone)
-	{
-		//just for test
-		//echo $this->RetJson('SendSms phone:'.$phone.' code:'.$code, 'true');
-		//echo $this->RetJson('', 'true');
-		//exit;
-		require_once ALI_SMS_PATH.'aliyun-php-sdk-core/Regions/ProductDomain.php';
-		require_once ALI_SMS_PATH.'aliyun-php-sdk-core/Regions/Endpoint.php';
-		require_once ALI_SMS_PATH.'aliyun-php-sdk-core/Regions/EndpointProvider.php';
-		require_once ALI_SMS_PATH.'aliyun-php-sdk-core/Config.php';
-		require_once ALI_SMS_PATH.'aliyun-php-sdk-core/Profile/IClientProfile.php';
-		require_once ALI_SMS_PATH.'aliyun-php-sdk-core/IAcsClient.php';
-		require_once ALI_SMS_PATH.'aliyun-php-sdk-core/Profile/DefaultProfile.php';
-		require_once ALI_SMS_PATH.'aliyun-php-sdk-core/DefaultAcsClient.php';
-		require_once ALI_SMS_PATH.'aliyun-php-sdk-core/Exception/ClientException.php';
-		require_once ALI_SMS_PATH.'aliyun-php-sdk-core/Http/HttpHelper.php';
-		require_once ALI_SMS_PATH.'aliyun-php-sdk-core/Http/HttpResponse.php';
-		require_once ALI_SMS_PATH.'aliyun-php-sdk-core/Auth/ISigner.php';
-		require_once ALI_SMS_PATH.'aliyun-php-sdk-core/Auth/ShaHmac1Signer.php';
-		require_once ALI_SMS_PATH.'aliyun-php-sdk-core/Auth/Credential.php';
-		require_once ALI_SMS_PATH.'aliyun-php-sdk-core/AcsRequest.php';
-		require_once ALI_SMS_PATH.'aliyun-php-sdk-core/RpcAcsRequest.php';
-		require_once ALI_SMS_PATH.'aliyun-php-sdk-sms/Sms/Request/V20160927/SingleSendSmsRequest.php';
-		
-
-		$iClientProfile = DefaultProfile::getProfile("cn-hangzhou", "LTAIHIJJOExv9Dqv", "uq9PjUwvCts4Sdomytl6ciEiCw3Cxr");
-		$client = new DefaultAcsClient($iClientProfile);
-		$request = new SingleSendSmsRequest();
-		$request->setSignName("易网真");//签名名称
-		$request->setTemplateCode("SMS_37125131");//模板code
-		$request->setRecNum($phone);//目标手机号
-		$request->setParamString("{\"code\":\"0\",\"product\":\"高考志愿填报大型公益讲座，于19点30分直播，请点击“易网真”微信公众号活动菜单进入。或用微信进入之前分享的页面进行收看，多谢参与我们\",\"item\":\"\"}");//模板变量，数字一定要转换为字符串
-		try
-		{
-			$response = $client->getAcsResponse($request);
-		}
-		catch (ClientException $e)
-		{
-			//print_r($e->getErrorCode());
-			return $e->getErrorMessage();
-		}
-		catch (ServerException $e)
-		{
-			//print_r($e->getErrorCode());
-			return $e->getErrorMessage();
-		}
-
-		return '';
 	}
 
 	/*

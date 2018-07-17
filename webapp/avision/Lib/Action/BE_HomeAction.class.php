@@ -127,7 +127,7 @@ class BE_HomeAction extends SafeAction {
             //当前用户相关频道
 
             $userId=$this->userId();
-            $userId=150649;
+            //$userId=150649;
             if($userId<=0){
                 throw new Exception("请先登录！");
                 return;
@@ -299,7 +299,7 @@ logfile('acceptUrl:'.$acceptUrl,LogLevel::DEBUG);
     }
 
     public function t(){
-        echo "ttt11";
+
         logfile("tt111",8);
     }
 }
